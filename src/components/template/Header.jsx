@@ -12,9 +12,11 @@ const Header = () => {
               <ul>
                   {/*Link updates the URL to the provided path name, which then
                   triggers the route associated with that path name*/}
-                  <li><Link to="/welcome">Welcome</Link></li>
-                  <li><Link to="/our_macarons">Videos</Link></li>
-                  <li><Link to="/gifts_parties">Blog</Link></li>
+                  <li><Link to="/">Home</Link></li>
+                  <li><Link to="/login">Login</Link></li>
+                  <li><Link to="/videos">Videos</Link></li>
+                  <li><Link to="/blog">Blog</Link></li>
+                  <li><Link to="/shop">Shop</Link></li>
                   <li><Link to="/contact">Contact Us</Link></li>
               </ul>
           </div>

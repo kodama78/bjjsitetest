@@ -1,10 +1,17 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import { Jumbotron } from './components';
+import {
+    Jumbotron,
+    Login,
+    Shop
+} from './components';
+
 const Routes = () => (
     <div>
         <Switch>
-            <Route path="/" component={ Jumbotron }/>
+            <Route exact path="/" component={ Jumbotron }/>
+            <Route path="/shop" component={ Shop }/>
+            <Route path="/login" component={ Login }/>
         </Switch>
     </div>
 );
