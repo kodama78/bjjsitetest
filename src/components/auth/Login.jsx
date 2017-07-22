@@ -43,7 +43,6 @@ class Login extends Component {
     handleCreateAccount = () => {
         const { email, password, confirmPassword } = this.state;
         if (password === confirmPassword) {
-            debugger;
             return this.props.createAccount(email, password)
                 .then((res) => console.log('promise returned', res))
                 .catch(e => console.log('e is ', e))
