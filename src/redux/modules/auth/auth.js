@@ -4,46 +4,34 @@ const auth = firebase.auth();
 // Constants
 // ------------------------------------
 
-export const REQUEST_CREATE_USER = 'REQUEST_CREATE_USER';
-export const RECEIVE_CREATE_USER = 'RECEIVE_CREATE_USER';
-export const REQUEST_LOGIN = 'REQUEST_LOGIN';
-export const RECEIVE_LOGIN = 'RECEIVE_LOGIN';
+export const AUTH_USER = 'AUTH_USER';
+export const SIGN_OUT_USER = 'SIGN_OUT_USER';
+export const AUTH_ERROR = 'AUTH_ERROR';
 
-export const REQUEST_LOGOUT = 'REQUEST_LOGOUT';
-export const RECEIVE_LOGOUT = 'RECEIVE_LOGOUT';
-
-export const REQUEST_PASSWORD_RESET = 'RQUEST_PASSWORD_RESET';
+export const REQUEST_PASSWORD_RESET = 'REQUEST_PASSWORD_RESET';
 export const RECEIVE_PASSWORD_RESET = 'RECEIVE_PASSWORD_RESET';
 
 // ------------------------------------
 // Actions
 // ------------------------------------
 
-export function requestCreateUser(email, password) {
+export function authUser() {
     return {
-        type: REQUEST_CREATE_USER,
-        payload: { email, password }
+        type: AUTH_USER
+    }
+}
+export function authError(error) {
+    return {
+        type: AUTH_ERROR,
+        payload: error
     }
 }
 
-export function receiveCreateUser(json) {
+export function signOutUser() {
     return {
-        type: RECEIVE_CREATE_USER,
-        payload: json
+        type: SIGN_OUT_USER
     }
 }
-
-export function requestLogin() {
-    return {
-        type: REQUEST_LOGIN
-    }
-}
-export function receiveLogin() {
-    return {
-        type: RECEIVE_LOGIN
-    }
-}
-
 // ------------------------------------
 // Login
 // ------------------------------------
@@ -52,18 +40,55 @@ export function receiveLogin() {
 // Account
 // ------------------------------------
 export function createAccount(email, password) {
-    console.log('email: ', ...arguments);
     return (dispatch) => {
-        dispatch(requestCreateUser(email, password));
         return auth.createUserWithEmailAndPassword(email, password)
-                   .then((res) => console.log('you\'ve created a login', res))
-                   .catch(e => console.log(e.message));
+                   .then(() => {
+                       dispatch(authUser());
+                   })
+                   .catch(error => {
+                       console.log(error);
+                       dispatch(authError(error));
+                   });
     }
 }
 
-export const actions = {
-  createAccount
-};
+export function login(email, password) {
+    return dispatch => {
+        return auth.signInWithEmailAndPassword(email, password)
+                   .then((res) => {
+                        dispatch(authUser());
+                        console.log(res);
+                    })
+                   .catch(error => {
+                        console.log(error);
+                        dispatch(authError(error));
+                    });
+    }
+}
+
+export function signOut() {
+    console.log('signing out');
+    return dispatch => {
+        auth.signOut()
+            .then(() => {
+                dispatch(signOutUser());
+            })
+    }
+}
+
+export function verifyAuth() {
+    return dispatch => {
+        return auth.onAuthStateChanged(user => {
+            if (user) {
+                console.log('user logged in');
+                dispatch(authUser());
+            } else {
+                dispatch(signOutUser());
+                console.log('user logged out');
+            }
+        });
+    }
+}
 // ------------------------------------
 // Password
 // ------------------------------------
@@ -73,13 +98,19 @@ export const actions = {
 // ------------------------------------
 
 const initialState = {
-    user: undefined
+    authenticated: undefined,
+    error: undefined
 };
 
 export default function authReducer(state = initialState, action) {
     switch (action.type) {
-        case REQUEST_CREATE_USER:
-            return {...state, user: action.payload};
+        case AUTH_USER:
+            return { ...state, user: action.payload, authenticated: true };
+        case SIGN_OUT_USER:
+            return { ...state, authenticated: false };
+        case AUTH_ERROR:
+            return { error: action.payload.message };
+
         default:
             return state;
     }

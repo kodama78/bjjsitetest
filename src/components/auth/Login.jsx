@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as firebase from 'firebase';
-import { createAccount } from '../../redux/modules/auth/auth';
+import { createAccount, login, signOut } from '../../redux/modules/auth/auth';
 
 class Login extends Component {
 
@@ -13,13 +13,17 @@ class Login extends Component {
 
     auth = firebase.auth();
 
-    login = () => {
+    handleLogin = () => {
         console.log('here I am');
         const emailUser = this.state.email;
         const pass = this.state.password;
-        this.auth.signInWithEmailAndPassword(emailUser, pass)
-            .then(() => console.log('you\'ve logged in'))
-            .catch(e => console.log(e.message));
+        return  this.props.login(emailUser, pass)
+
+    };
+
+    handleSignOut = () => {
+        console.log('sign out');
+        this.props.signOut();
     };
 
     handleEmail = (e) => {
@@ -44,8 +48,6 @@ class Login extends Component {
         const { email, password, confirmPassword } = this.state;
         if (password === confirmPassword) {
             return this.props.createAccount(email, password)
-                .then((res) => console.log('promise returned', res))
-                .catch(e => console.log('e is ', e))
         }
 
     };
@@ -61,11 +63,14 @@ class Login extends Component {
                 <input type="password" id="confirmPassword" placeholder="Confirm Password"
                        onChange={ this.handleConfirmPassword } />
                 { (password !== confirmPassword) ? <label>Passwords must match</label> : null }
-                <button id="login-btn" onClick={ this.login }>
+                <button id="login-btn" onClick={ this.handleLogin }>
                     Log In
                 </button>
                 <button id="sign-up-btn"  onClick={ this.handleCreateAccount }>
                     Sign Up
+                </button>
+                <button id="sign-out-btn"  onClick={ this.handleSignOut }>
+                    Sign Out
                 </button>
             </div>
         );
@@ -80,4 +85,4 @@ const mapStateToProps = (state) => {
     };
 };
 
-export default connect(mapStateToProps, { createAccount })(Login);
+export default connect(mapStateToProps, { createAccount, login, signOut })(Login);
