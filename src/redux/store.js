@@ -10,9 +10,7 @@ export default function configureStore(history, initialState) {
     const store = createStore(
         rootReducer,
         initialState,
-        composeWithDevTools(
-            middleware
-        )
+        composeWithDevTools(middleware)
     );
 
     store.dispatch(verifyAuth());
